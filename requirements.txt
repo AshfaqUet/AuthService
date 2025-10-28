@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+passlib[argon2]
+pydantic>=2.0
+pydantic-settings>=2.0
+pydantic[email]
+python-dotenv
+pyjwt
+python-multipart
