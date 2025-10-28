@@ -56,6 +56,18 @@ class RequestSmugglingGuardMiddleware(BaseHTTPMiddleware):
                 return {"type": "http.request", "body": body, "more_body": False}
             request._receive = receive
 
+        # ✅ Rule 4: Block malformed bodies (non-JSON in POST/PUT requests)
+        if request.method in ("POST", "PUT", "PATCH"):
+            content_type = headers.get("content-type", "")
+            if "application/json" in content_type or not content_type:
+                try:
+                    json.loads(body.decode() or "{}")
+                except Exception:
+                    return Response(
+                        content="Bad Request: malformed request body",
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                    )
+
         # Strip TE/CL headers downstream (optional for safety)
         new_headers = [
             (k, v)
